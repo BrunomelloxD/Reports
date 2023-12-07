@@ -115,13 +115,20 @@ class UserModel implements UserRepository
                 return $data;
             }
 
-            $sql = "SELECT id, username, email, created_at FROM users WHERE id = :id";
+            $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name
+            FROM users 
+            JOIN user_roles ON users.id = user_roles.user_id 
+            JOIN roles ON user_roles.role_id = roles.id 
+            JOIN user_uf_relations ON users.id = user_uf_relations.user_id 
+            JOIN ufs ON user_uf_relations.uf_id = ufs.id 
+            WHERE users.id = :id";
+
             $stmt = $this->conn->prepare($sql);
             $stmt->bindValue(':id', $user_id);
             $stmt->execute();
-            $response = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$response) {
+            if (!$user) {
                 $data = [
                     'code' => 404,
                     'response' => [
@@ -131,6 +138,19 @@ class UserModel implements UserRepository
                 ];
                 return $data;
             }
+
+            $sqlReports = "SELECT * FROM reports WHERE user_id = :id";
+            $stmtReports = $this->conn->prepare($sqlReports);
+            $stmtReports->bindValue(':id', $user_id);
+            $stmtReports->execute();
+            $reports = $stmtReports->fetchAll(PDO::FETCH_ASSOC);
+
+            $httpCode = 200;
+            $response = [
+                'code' => $httpCode,
+                'user' => $user,
+                'reports' => $reports
+            ];
 
             $data = [
                 'code' => 200,
@@ -190,6 +210,7 @@ class UserModel implements UserRepository
             }
 
             $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name FROM users JOIN user_roles ON users.id = user_roles.user_id JOIN roles ON user_roles.role_id = roles.id JOIN user_uf_relations ON users.id = user_uf_relations.user_id JOIN ufs ON user_uf_relations.uf_id = ufs.id";
+
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             $response = $stmt->fetchAll(PDO::FETCH_ASSOC);

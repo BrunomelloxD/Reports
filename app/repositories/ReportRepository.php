@@ -7,4 +7,5 @@ use Exception;
 interface ReportRepository
 {
     public function create($params): array | Exception;
+    public function getAll($params): array | Exception;
 }

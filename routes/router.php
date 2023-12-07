@@ -37,8 +37,10 @@ $router = [
     'GET' => [
         '/get-user/' => fn () => load('UserController', 'getUser'),
         '/get-all-user/' => fn () => load('UserController', 'getAll'),
+        '/get-all-report/' => fn () => load('ReportController', 'getAll'),
     ],
     'POST' => [
+        '/create-report/' => fn () => load('ReportController', 'create',),
         '/create-user/' => fn () => load('UserController', 'create',),
         '/login/' => fn () => load('UserController', 'login'),
     ],
