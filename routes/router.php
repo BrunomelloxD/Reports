@@ -46,6 +46,7 @@ $router = [
     ],
     'DELETE' => [
         '/delete-user/' => fn () => load('UserController', 'delete'),
+        '/delete-report/' => fn () => load('ReportController', 'delete'),
     ],
     'PATCH' => [
         '/update-user/' => fn () => load('UserController', 'update'),

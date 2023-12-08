@@ -27,9 +27,11 @@ class ReportModel implements ReportRepository
             $description = $params->description;
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($title) || !isset($description)) {
+                $httpCode = 400;
                 $data = [
-                    'code' => 400,
+                    'code' => $httpCode,
                     'response' => [
+                        'code' => $httpCode,
                         'message' => 'All fields are required',
                     ],
                 ];
@@ -40,9 +42,11 @@ class ReportModel implements ReportRepository
             $auth = $this->authMiddleware->handleCheckPermissionAdmin($auth_email);
 
             if (!$auth) {
+                $httpCode = 401;
                 $data = [
-                    'code' => 401,
+                    'code' => $httpCode,
                     'response' => [
+                        'code' => $httpCode,
                         'message' => 'User is not authorized',
                     ],
                 ];
@@ -157,6 +161,82 @@ class ReportModel implements ReportRepository
             $data = [
                 'code' => 200,
                 'response' => $response,
+            ];
+
+            return $data;
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException('Error:', 0, $th);
+        }
+    }
+
+    public function delete($params): array | Exception
+    {
+        try {
+            $auth_email = $params->auth_email;
+            $auth_token = $params->auth_token;
+            $report_id = $params->report_id;
+
+            if (!isset($auth_email) || !isset($auth_token) || !isset($report_id)) {
+                $httpCode = 204;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'All fields are required',
+                    ],
+                ];
+                return $data;
+            }
+
+            $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
+
+            if (!$validateToken) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Invalid token',
+                    ],
+                ];
+                return $data;
+            }
+
+            // Getting user id
+            $sql = "SELECT id FROM users WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':email', $auth_email);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user_id = $user['id'];
+
+            // Deleting report
+            $sql = "DELETE FROM reports WHERE id = :report_id AND user_id = :user_id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':report_id', $report_id);
+            $stmt->bindParam(':user_id', $user_id);
+            $response = $stmt->execute();
+
+            if (!$response) {
+                $httpCode = 500;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Error deleting report',
+                    ],
+                ];
+                return $data;
+            }
+
+            $httpCode = 200;
+            $data = [
+                'code' => $httpCode,
+                'response' => [
+                    'code' => $httpCode,
+                    'message' => 'Report deleted successfully',
+                ],
             ];
 
             return $data;

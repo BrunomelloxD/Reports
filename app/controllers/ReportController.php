@@ -45,4 +45,16 @@ class ReportController
             throw new \RuntimeException($th);
         }
     }
+
+    public function delete(object $params)
+    {
+        try {
+            $data = $this->reportModel->delete($params);
+
+            return Response::json($data);
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
 }
