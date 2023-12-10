@@ -57,4 +57,16 @@ class ReportController
             throw new \RuntimeException($th);
         }
     }
+
+    public function update(object $params)
+    {
+        try {
+            $data = $this->reportModel->update($params);
+
+            return Response::json($data);
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
 }

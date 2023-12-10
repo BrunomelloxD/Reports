@@ -245,4 +245,84 @@ class ReportModel implements ReportRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
+
+    public function update($params): array | Exception
+    {
+        try {
+            $auth_email = $params->auth_email;
+            $auth_token = $params->auth_token;
+            $report_id = $params->report_id;
+            $title = $params->title;
+            $description = $params->description;
+
+            if (!isset($auth_email) || !isset($auth_token) || !isset($report_id) || !isset($title) || !isset($description)) {
+                $httpCode = 204;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'All fields are required',
+                    ],
+                ];
+                return $data;
+            }
+
+            $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
+
+            if (!$validateToken) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Invalid token',
+                    ],
+                ];
+                return $data;
+            }
+
+            // Getting user id
+            $sql = "SELECT id FROM users WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':email', $auth_email);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user_id = $user['id'];
+
+            // Updating report
+            $sql = "UPDATE reports SET title = :title, description = :description WHERE id = :report_id AND user_id = :user_id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':description', $description);
+            $stmt->bindParam(':report_id', $report_id);
+            $stmt->bindParam(':user_id', $user_id);
+            $response = $stmt->execute();
+
+            if (!$response) {
+                $httpCode = 500;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Error updating report',
+                    ],
+                ];
+                return $data;
+            }
+
+            $httpCode = 200;
+            $data = [
+                'code' => $httpCode,
+                'response' => [
+                    'code' => $httpCode,
+                    'message' => 'Report updated successfully',
+                ],
+            ];
+
+            return $data;
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException('Error:', 0, $th);
+        }
+    }
 }

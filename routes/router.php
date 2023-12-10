@@ -50,5 +50,6 @@ $router = [
     ],
     'PATCH' => [
         '/update-user/' => fn () => load('UserController', 'update'),
+        '/update-report/' => fn () => load('ReportController', 'update'),
     ],
 ];
