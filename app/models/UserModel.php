@@ -19,14 +19,14 @@ class UserModel implements UserRepository
         $this->authMiddleware = new AuthMiddleware($this->conn);
     }
 
-    public function create($params): array | Exception
+    public function create(): array | Exception
     {
         try {
-            $username = $params->name;
-            $email = $params->email;
-            $password = password_hash($params->password, PASSWORD_BCRYPT);
-            $role_id = $params->role_id;
-            $uf = $params->uf;
+            $username = $_GET['name'];
+            $email = $_GET['email'];
+            $password = $_GET['password'];
+            $role_id = $_GET['role_id'];
+            $uf = $_GET['uf'];
 
             if (!isset($username) || !isset($email) || !isset($password) || !isset($role_id) || !isset($uf)) {
                 $httpCode = 204;
@@ -58,6 +58,8 @@ class UserModel implements UserRepository
 
                 return $data;
             }
+
+            $password = password_hash($password, PASSWORD_BCRYPT);
 
             // Creating the user
             $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
@@ -98,10 +100,10 @@ class UserModel implements UserRepository
         }
     }
 
-    public function getUser($params): array | Exception
+    public function getUser(): array | Exception
     {
         try {
-            $user_id = $params->user_id;
+            $user_id = $_GET['user_id'];
 
             if (!isset($user_id)) {
                 $httpCode = 204;
@@ -129,10 +131,11 @@ class UserModel implements UserRepository
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$user) {
+                $httpCode = 404;
                 $data = [
-                    'code' => 404,
+                    'code' => $httpCode,
                     'response' => [
-                        'code' => 404,
+                        'code' => $httpCode,
                         'message' => 'User not found',
                     ],
                 ];
@@ -145,9 +148,7 @@ class UserModel implements UserRepository
             $stmtReports->execute();
             $reports = $stmtReports->fetchAll(PDO::FETCH_ASSOC);
 
-            $httpCode = 200;
             $response = [
-                'code' => $httpCode,
                 'user' => $user,
                 'reports' => $reports
             ];
@@ -164,11 +165,11 @@ class UserModel implements UserRepository
         }
     }
 
-    public function getAll($params): array | Exception
+    public function getAll(): array | Exception
     {
         try {
-            $email = $params->auth_email;
-            $token = $params->auth_token;
+            $email = $_GET['auth_email'];
+            $token = $_GET['auth_token'];
 
             if (!isset($email) || !isset($token)) {
                 $httpCode = 204;
@@ -227,11 +228,11 @@ class UserModel implements UserRepository
         }
     }
 
-    public function login($params): array | Exception
+    public function login(): array | Exception
     {
         try {
-            $email = $params->email;
-            $password = $params->password;
+            $email = $_GET['email'];
+            $password = $_GET['password'];
 
             if (!isset($email) || !isset($password)) {
                 $httpCode = 204;
@@ -316,12 +317,12 @@ class UserModel implements UserRepository
         }
     }
 
-    public function delete($params): array | Exception
+    public function delete(): array | Exception
     {
         try {
-            $email = $params->email;
-            $userId = $params->user_id;
-            $token = $params->auth_token;
+            $email = $_GET['email'];
+            $userId = $_GET['user_id'];
+            $token = $_GET['auth_token'];
 
             if (!isset($email) || !isset($userId) || !isset($token)) {
                 $httpCode = 204;
@@ -413,16 +414,16 @@ class UserModel implements UserRepository
         }
     }
 
-    public function update($params): array | Exception
+    public function update(): array | Exception
     {
         try {
-            $auth_email = $params->auth_email;
-            $auth_token = $params->auth_token;
-            $user_id = $params->user_id;
-            $username = $params->name;
-            $email = $params->email;
-            $role_id = $params->role_id;
-            $uf = $params->uf;
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
+            $user_id = $_GET['user_id'];
+            $username = $_GET['name'];
+            $email = $_GET['email'];
+            $role_id = $_GET['role_id'];
+            $uf = $_GET['uf'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($user_id) || !isset($username) || !isset($email) || !isset($role_id) || !isset($uf)) {
                 $httpCode = 204;
@@ -436,17 +437,50 @@ class UserModel implements UserRepository
                 return $data;
             }
 
+            // Check if user is admin
             $auth = $this->authMiddleware->handleCheckPermissionAdmin($auth_email);
-
-
-            $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
-
-            if (!$auth || !$validateToken) {
+            if (!$auth) {
+                $httpCode = 403;
                 $data = [
-                    'code' => 401,
+                    'code' => $httpCode,
                     'response' => [
-                        'code' => 401,
+                        'code' => $httpCode,
+                        'message' => 'User not authorized',
+                    ],
+                ];
+                return $data;
+            }
+
+            // Check if token is valid
+            $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
+            if (!$validateToken) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
                         'message' => 'Invalid token',
+                    ],
+                ];
+                return $data;
+            }
+
+            // Select user id
+            $sql = "SELECT id FROM users WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $user = $stmt->fetch();
+
+            // User not found in database
+            $id = $user['id'];
+            if ($user_id != $id) {
+                $httpCode = 404;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'User id and email not match',
                     ],
                 ];
                 return $data;

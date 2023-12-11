@@ -6,10 +6,10 @@ use Exception;
 
 interface UserRepository
 {
-    public function create($params): array | Exception;
-    public function getUser($params): array | Exception;
-    public function getAll($params): array | Exception;
-    public function login($params): array | Exception;
-    public function delete($params): array | Exception;
-    public function update($params): array | Exception;
+    public function create(): array | Exception;
+    public function getUser(): array | Exception;
+    public function getAll(): array | Exception;
+    public function login(): array | Exception;
+    public function delete(): array | Exception;
+    public function update(): array | Exception;
 }

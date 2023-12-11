@@ -22,10 +22,10 @@ class UserController
         $this->userModel = new UserModel($this->connection);
     }
 
-    public function create(object $params)
+    public function create()
     {
         try {
-            $data = $this->userModel->create($params);
+            $data = $this->userModel->create();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -34,10 +34,10 @@ class UserController
         }
     }
 
-    public function getUser(object $params)
+    public function getUser()
     {
         try {
-            $data = $this->userModel->getUser($params);
+            $data = $this->userModel->getUser();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -46,10 +46,10 @@ class UserController
         }
     }
 
-    public function getAll(object $params)
+    public function getAll()
     {
         try {
-            $data = $this->userModel->getAll($params);
+            $data = $this->userModel->getAll();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -58,10 +58,10 @@ class UserController
         }
     }
 
-    public function login(object $params)
+    public function login()
     {
         try {
-            $data = $this->userModel->login($params);
+            $data = $this->userModel->login();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -70,10 +70,10 @@ class UserController
         }
     }
 
-    public function delete(object $params)
+    public function delete()
     {
         try {
-            $data = $this->userModel->delete($params);
+            $data = $this->userModel->delete();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -82,10 +82,10 @@ class UserController
         }
     }
 
-    public function update(object $params)
+    public function update()
     {
         try {
-            $data = $this->userModel->update($params);
+            $data = $this->userModel->update();
 
             return Response::json($data);
         } catch (\Throwable $th) {

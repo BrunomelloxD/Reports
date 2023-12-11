@@ -22,10 +22,10 @@ class ReportController
         $this->reportModel = new ReportModel($this->connection);
     }
 
-    public function create(object $params)
+    public function create()
     {
         try {
-            $data = $this->reportModel->create($params);
+            $data = $this->reportModel->create();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -34,10 +34,10 @@ class ReportController
         }
     }
 
-    public function getAll(object $params)
+    public function getAll()
     {
         try {
-            $data = $this->reportModel->getAll($params);
+            $data = $this->reportModel->getAll();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -46,10 +46,10 @@ class ReportController
         }
     }
 
-    public function delete(object $params)
+    public function delete()
     {
         try {
-            $data = $this->reportModel->delete($params);
+            $data = $this->reportModel->delete();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -58,10 +58,10 @@ class ReportController
         }
     }
 
-    public function update(object $params)
+    public function update()
     {
         try {
-            $data = $this->reportModel->update($params);
+            $data = $this->reportModel->update();
 
             return Response::json($data);
         } catch (\Throwable $th) {

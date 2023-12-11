@@ -18,13 +18,13 @@ class ReportModel implements ReportRepository
         $this->authMiddleware = new AuthMiddleware($this->conn);
     }
 
-    public function create($params): array | Exception
+    public function create(): array | Exception
     {
         try {
-            $auth_email = $params->auth_email;
-            $auth_token = $params->auth_token;
-            $title = $params->title;
-            $description = $params->description;
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
+            $title = $_GET['title'];
+            $description = $_GET['description'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($title) || !isset($description)) {
                 $httpCode = 400;
@@ -33,21 +33,6 @@ class ReportModel implements ReportRepository
                     'response' => [
                         'code' => $httpCode,
                         'message' => 'All fields are required',
-                    ],
-                ];
-
-                return $data;
-            }
-
-            $auth = $this->authMiddleware->handleCheckPermissionAdmin($auth_email);
-
-            if (!$auth) {
-                $httpCode = 401;
-                $data = [
-                    'code' => $httpCode,
-                    'response' => [
-                        'code' => $httpCode,
-                        'message' => 'User is not authorized',
                     ],
                 ];
 
@@ -101,12 +86,12 @@ class ReportModel implements ReportRepository
         }
     }
 
-    public function getAll($params): array | Exception
+    public function getAll(): array | Exception
     {
         try {
-            $auth_email = $params->auth_email;
-            $auth_token = $params->auth_token;
-            $user_id = $params->user_id;
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
+            $user_id = $_GET['user_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($user_id)) {
                 $httpCode = 400;
@@ -170,12 +155,12 @@ class ReportModel implements ReportRepository
         }
     }
 
-    public function delete($params): array | Exception
+    public function delete(): array | Exception
     {
         try {
-            $auth_email = $params->auth_email;
-            $auth_token = $params->auth_token;
-            $report_id = $params->report_id;
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
+            $report_id = $_GET['report_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($report_id)) {
                 $httpCode = 204;
@@ -246,14 +231,14 @@ class ReportModel implements ReportRepository
         }
     }
 
-    public function update($params): array | Exception
+    public function update(): array | Exception
     {
         try {
-            $auth_email = $params->auth_email;
-            $auth_token = $params->auth_token;
-            $report_id = $params->report_id;
-            $title = $params->title;
-            $description = $params->description;
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
+            $report_id = $_GET['report_id'];
+            $title = $_GET['title'];
+            $description = $_GET['description'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($report_id) || !isset($title) || !isset($description)) {
                 $httpCode = 204;

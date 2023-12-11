@@ -6,7 +6,7 @@ use Exception;
 
 interface ReportRepository
 {
-    public function create($params): array | Exception;
-    public function getAll($params): array | Exception;
-    public function delete($params): array | Exception;
+    public function create(): array | Exception;
+    public function getAll(): array | Exception;
+    public function delete(): array | Exception;
 }
