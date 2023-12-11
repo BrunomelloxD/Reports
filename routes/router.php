@@ -35,21 +35,42 @@ function load(string $controller, string $action): void
 // Router
 $router = [
     'GET' => [
+        // User Controller
         '/get-user/' => fn () => load('UserController', 'getUser'),
         '/get-all-user/' => fn () => load('UserController', 'getAll'),
+        // Report Controller
         '/get-all-report/' => fn () => load('ReportController', 'getAll'),
+        // Role Controller
+        '/get-all-role/' => fn () => load('RoleController', 'getAll'),
+        '/get-role/' => fn () => load('RoleController', 'get'),
+        // Uf Controller 
+        '/get-all-uf/' => fn () => load('UfController', 'getAll'),
+        '/get-uf/' => fn () => load('UfController', 'get'),
+
     ],
     'POST' => [
-        '/create-report/' => fn () => load('ReportController', 'create',),
+        // User Controller
         '/create-user/' => fn () => load('UserController', 'create',),
         '/login/' => fn () => load('UserController', 'login'),
+        // Role Controller
+        '/create-new-role/' => fn () => load('RoleController', 'create'),
+        // Report Controller
+        '/create-report/' => fn () => load('ReportController', 'create'),
     ],
     'DELETE' => [
+        // User Controller
         '/delete-user/' => fn () => load('UserController', 'delete'),
+        // Report Controller
         '/delete-report/' => fn () => load('ReportController', 'delete'),
+        // Role Controller
+        '/delete-role/' => fn () => load('RoleController', 'delete'),
     ],
     'PATCH' => [
+        // User Controller
         '/update-user/' => fn () => load('UserController', 'update'),
+        // Report Controller
         '/update-report/' => fn () => load('ReportController', 'update'),
+        // Role Controller
+        '/update-role/' => fn () => load('RoleController', 'update'),
     ],
 ];

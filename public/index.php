@@ -20,5 +20,6 @@ try {
     $controller = $router[$request][$uri];
     $controller();
 } catch (Exception $e) {
-    throw $e; // Use "throw" para lançar a exceção corretamente
+    http_response_code(500);
+    throw new Exception($e->getMessage());
 }

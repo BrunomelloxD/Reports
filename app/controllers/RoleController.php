@@ -3,13 +3,13 @@
 namespace app\controllers;
 
 use app\views\Response;
-use app\models\UserModel;
+use app\models\RoleModel;
 use app\infra\database\Connection;
 
-class UserController
+class RoleController
 {
     private $connection;
-    private $userModel;
+    private $roleModel;
 
     public function __construct()
     {
@@ -19,13 +19,13 @@ class UserController
         $dbPassword = $_ENV['DB_PASSWORD'];
 
         $this->connection = new Connection($dbHost, $dbName, $dbUser, $dbPassword);
-        $this->userModel = new UserModel($this->connection);
+        $this->roleModel = new RoleModel($this->connection);
     }
 
     public function create()
     {
         try {
-            $data = $this->userModel->create();
+            $data = $this->roleModel->create();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -33,23 +33,10 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
-    public function getUser()
-    {
-        try {
-            $data = $this->userModel->getUser();
-
-            return Response::json($data);
-        } catch (\Throwable $th) {
-            echo $th->getMessage();
-            throw new \RuntimeException($th);
-        }
-    }
-
     public function getAll()
     {
         try {
-            $data = $this->userModel->getAll();
+            $data = $this->roleModel->getAll();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -57,23 +44,10 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
-    public function login()
-    {
-        try {
-            $data = $this->userModel->login();
-
-            return Response::json($data);
-        } catch (\Throwable $th) {
-            echo $th->getMessage();
-            throw new \RuntimeException($th);
-        }
-    }
-
     public function delete()
     {
         try {
-            $data = $this->userModel->delete();
+            $data = $this->roleModel->delete();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -81,11 +55,10 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function update()
     {
         try {
-            $data = $this->userModel->update();
+            $data = $this->roleModel->update();
 
             return Response::json($data);
         } catch (\Throwable $th) {
@@ -93,10 +66,10 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-    public function createNewRole()
+    public function get()
     {
         try {
-            $data = $this->userModel->createNewRole();
+            $data = $this->roleModel->get();
 
             return Response::json($data);
         } catch (\Throwable $th) {
