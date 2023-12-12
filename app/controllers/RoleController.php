@@ -21,7 +21,6 @@ class RoleController
         $this->connection = new Connection($dbHost, $dbName, $dbUser, $dbPassword);
         $this->roleModel = new RoleModel($this->connection);
     }
-
     public function create()
     {
         try {

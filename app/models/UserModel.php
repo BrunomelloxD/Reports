@@ -99,7 +99,6 @@ class UserModel implements UserRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
-
     public function getUser(): array | Exception
     {
         try {
@@ -164,7 +163,6 @@ class UserModel implements UserRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
-
     public function getAll(): array | Exception
     {
         try {
@@ -227,7 +225,6 @@ class UserModel implements UserRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
-
     public function login(): array | Exception
     {
         try {
@@ -316,7 +313,6 @@ class UserModel implements UserRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
-
     public function delete(): array | Exception
     {
         try {
@@ -413,7 +409,6 @@ class UserModel implements UserRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
-
     public function update(): array | Exception
     {
         try {

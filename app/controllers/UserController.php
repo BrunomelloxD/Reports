@@ -33,7 +33,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function getUser()
     {
         try {
@@ -45,7 +44,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function getAll()
     {
         try {
@@ -57,7 +55,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function login()
     {
         try {
@@ -69,7 +66,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function delete()
     {
         try {
@@ -81,7 +77,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function update()
     {
         try {

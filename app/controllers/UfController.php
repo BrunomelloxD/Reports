@@ -21,7 +21,6 @@ class UfController
         $this->connection = new Connection($dbHost, $dbName, $dbUser, $dbPassword);
         $this->ufModel = new UfModel($this->connection);
     }
-
     public function getAll()
     {
         try {
@@ -33,13 +32,45 @@ class UfController
             throw new \RuntimeException($th);
         }
     }
-
     public function get()
     {
         try {
             $data = $this->ufModel->get();
 
             return Response::json($data);
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
+    public function create() {
+        try {
+            $data = $this->ufModel->create();
+
+            return Response::json($data);
+
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
+    public function delete() {
+        try {
+            $data = $this->ufModel->delete();
+
+            return Response::json($data);
+
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
+    public function update() {
+        try {
+            $data = $this->ufModel->update();
+
+            return Response::json($data);
+
         } catch (\Throwable $th) {
             echo $th->getMessage();
             throw new \RuntimeException($th);

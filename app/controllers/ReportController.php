@@ -21,7 +21,6 @@ class ReportController
         $this->connection = new Connection($dbHost, $dbName, $dbUser, $dbPassword);
         $this->reportModel = new ReportModel($this->connection);
     }
-
     public function create()
     {
         try {
@@ -33,7 +32,6 @@ class ReportController
             throw new \RuntimeException($th);
         }
     }
-
     public function getAll()
     {
         try {
@@ -45,7 +43,6 @@ class ReportController
             throw new \RuntimeException($th);
         }
     }
-
     public function delete()
     {
         try {
@@ -57,7 +54,6 @@ class ReportController
             throw new \RuntimeException($th);
         }
     }
-
     public function update()
     {
         try {

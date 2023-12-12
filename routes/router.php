@@ -56,6 +56,8 @@ $router = [
         '/create-new-role/' => fn () => load('RoleController', 'create'),
         // Report Controller
         '/create-report/' => fn () => load('ReportController', 'create'),
+        // Uf Controller
+        '/create-uf/' => fn () => load('UfController', 'create'),
     ],
     'DELETE' => [
         // User Controller
@@ -64,6 +66,8 @@ $router = [
         '/delete-report/' => fn () => load('ReportController', 'delete'),
         // Role Controller
         '/delete-role/' => fn () => load('RoleController', 'delete'),
+        // Uf Controller
+        '/delete-uf/' => fn () => load('UfController', 'delete'),
     ],
     'PATCH' => [
         // User Controller
@@ -72,5 +76,7 @@ $router = [
         '/update-report/' => fn () => load('ReportController', 'update'),
         // Role Controller
         '/update-role/' => fn () => load('RoleController', 'update'),
+        // Uf Controller
+        '/update-uf/' => fn () => load('UfController', 'update'),
     ],
 ];
