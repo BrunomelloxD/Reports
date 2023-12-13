@@ -66,6 +66,8 @@ class AuthMiddleware
             $stmt->bindValue(':email', $email);
             $stmt->execute();
 
+            echo 'ok';
+
             return false;
         } catch (\Throwable $th) {
             throw new \RuntimeException('Error:', 0, $th);

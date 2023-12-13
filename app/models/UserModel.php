@@ -4,8 +4,10 @@ namespace app\models;
 
 use app\repositories\UserRepository;
 use app\infra\Database\Connection;
-use app\utils\GenerateToken;
 use app\middlewares\AuthMiddleware;
+use app\utils\GenerateToken;
+use app\utils\RandomPassword;
+use app\utils\SendEmail;
 use Exception;
 use PDO;
 
@@ -19,22 +21,50 @@ class UserModel implements UserRepository
         $this->authMiddleware = new AuthMiddleware($this->conn);
     }
 
+    // Create user - Admin only
     public function create(): array | Exception
     {
         try {
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
             $username = $_GET['name'];
             $email = $_GET['email'];
-            $password = $_GET['password'];
             $role_id = $_GET['role_id'];
             $uf = $_GET['uf'];
 
-            if (!isset($username) || !isset($email) || !isset($password) || !isset($role_id) || !isset($uf)) {
+            if (!isset($auth_email) || !isset($auth_token) || !isset($username) || !isset($email) || !isset($role_id) || !isset($uf)) {
                 $httpCode = 204;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
                         'code' => $httpCode,
                         'message' => 'All fields are required',
+                    ],
+                ];
+                return $data;
+            }
+
+            $auth = $this->authMiddleware->handleCheckPermissionAdmin($auth_email);
+            if (!$auth) {
+                $httpCode = 403;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Permission denied',
+                    ],
+                ];
+                return $data;
+            }
+
+            $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
+            if (!$validateToken) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Invalid token',
                     ],
                 ];
                 return $data;
@@ -59,14 +89,17 @@ class UserModel implements UserRepository
                 return $data;
             }
 
-            $password = password_hash($password, PASSWORD_BCRYPT);
+            $randomPassword = new RandomPassword();
+            $password = $randomPassword->handle();
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
             // Creating the user
             $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindValue(':username', $username);
             $stmt->bindValue(':email', $email);
-            $stmt->bindValue(':password', $password);
+            $stmt->bindValue(':password', $hashedPassword);
             $stmt->execute();
             $user_id = $this->conn->lastInsertId();
 
@@ -84,6 +117,9 @@ class UserModel implements UserRepository
             $stmt->bindParam(':uf_id', $uf);
             $stmt->execute();
 
+            $sendEmail =  new SendEmail;
+            $sendEmail->handle($email, $password);
+
             $httpCode = 201;
             $data = [
                 'code' => $httpCode,
@@ -94,9 +130,9 @@ class UserModel implements UserRepository
             ];
 
             return $data;
-        } catch (\Throwable $th) {
-            echo $th->getMessage();
-            throw new \RuntimeException('Error:', 0, $th);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            throw new \RuntimeException('Error:', 0, $e);
         }
     }
     public function getUser(): array | Exception
@@ -182,6 +218,18 @@ class UserModel implements UserRepository
             }
 
             $auth = $this->authMiddleware->handleCheckPermissionAdmin($email);
+            if (!$auth) {
+                $httpCode = 403;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Unauthorized'
+                    ],
+                ];
+                return $data;
+            }
+
             $validateToken = $this->authMiddleware->handleValidateLoginToken($email, $token);
 
             if (!$validateToken) {
@@ -243,7 +291,7 @@ class UserModel implements UserRepository
                 return $data;
             }
 
-            $sql = "SELECT * FROM users WHERE email = :email";
+            $sql = "SELECT * FROM users  WHERE email = :email";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindValue(':email', $email);
             $stmt->execute();
@@ -290,6 +338,7 @@ class UserModel implements UserRepository
             $stmt->bindValue(':user_id', $user_id);
 
             if ($stmt->execute()) {
+                echo $stmt->execute();
                 $response = [
                     'user' => [
                         'id' => $response['id'],
@@ -297,8 +346,7 @@ class UserModel implements UserRepository
                         'email' => $response['email'],
                         'created_at' => $response['created_at']
                     ],
-                    'token' => $token,
-                    'expires_at' => $tokenTime
+                    'token' => $token
                 ];
 
                 $data = [

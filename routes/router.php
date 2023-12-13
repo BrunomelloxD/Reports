@@ -49,8 +49,8 @@ $router = [
 
     ],
     'POST' => [
-        // User Controller
-        '/create-user/' => fn () => load('UserController', 'create',),
+        // User Controller - admin only
+        '/create-user/' => fn () => load('AdminUserController', 'create'),
         '/login/' => fn () => load('UserController', 'login'),
         // Role Controller
         '/create-new-role/' => fn () => load('RoleController', 'create'),

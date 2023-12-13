@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Controllers;
+namespace app\controllers;
 
 use app\views\Response;
 use app\models\ReportModel;

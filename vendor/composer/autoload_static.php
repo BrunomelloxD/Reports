@@ -29,6 +29,7 @@ class ComposerStaticInit88c50ca1c40ae55796b98bae91dc88b7
         array (
             'PhpParser\\' => 10,
             'PhpOption\\' => 10,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'L' => 
         array (
@@ -69,6 +70,10 @@ class ComposerStaticInit88c50ca1c40ae55796b98bae91dc88b7
         'PhpOption\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'League\\Plates\\' => 
         array (

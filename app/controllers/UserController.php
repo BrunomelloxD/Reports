@@ -33,6 +33,7 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
+
     public function getUser()
     {
         try {

@@ -3,7 +3,7 @@
         'name' => 'bruno/router-php',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'aacd0e38514e1aa55e69375b618744e167d25b24',
+        'reference' => '95aef4140e5161203a5c4949a7b7847954257b50',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'bruno/router-php' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'aacd0e38514e1aa55e69375b618744e167d25b24',
+            'reference' => '95aef4140e5161203a5c4949a7b7847954257b50',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -72,6 +72,15 @@
             'install_path' => __DIR__ . '/../phar-io/version',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v6.9.1',
+            'version' => '6.9.1.0',
+            'reference' => '039de174cd9c17a8389754d3b877a2ed22743e18',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'phpoption/phpoption' => array(
             'pretty_version' => '1.9.2',

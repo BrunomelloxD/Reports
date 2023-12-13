@@ -12,6 +12,7 @@ return array(
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
+    'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'League\\Plates\\' => array($vendorDir . '/league/plates/src'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),

@@ -8,14 +8,14 @@ class MoveImageAndGetPath
     {
         $imageName = uniqid('image_') . '.' . pathinfo($image['name'], PATHINFO_EXTENSION);
 
-        $uploadDir = $_ENV['UPLOAD_DIR'];
+        define('UPLOAD_DIR', $_ENV['UPLOAD_DIR']);
 
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+        if (!is_dir(UPLOAD_DIR)) {
+            mkdir(UPLOAD_DIR, 0777, true);
         }
 
-        $imagePath = $uploadDir . $imageName;
-        $imageDB = substr($uploadDir, 2) . $imageName;
+        $imagePath = UPLOAD_DIR . $imageName;
+        $imageDB = substr(UPLOAD_DIR, 2) . $imageName;
 
         move_uploaded_file($image['tmp_name'], $imagePath);
 
