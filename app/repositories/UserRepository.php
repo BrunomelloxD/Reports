@@ -12,4 +12,6 @@ interface UserRepository
     public function login(): array | Exception;
     public function delete(): array | Exception;
     public function update(): array | Exception;
+    public function generateTokenResetPassword(): array | Exception;
+    public function resetPassword(): array | Exception;
 }

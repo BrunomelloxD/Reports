@@ -8,12 +8,12 @@ use PHPMailer\PHPMailer\Exception;
 
 class SendEmail
 {
-    public function handle($email, $password)
+    public function handle($email, $password, $title, $body)
     {
-        $mail = new PHPMailer(true);
         define("LOGIN", $_ENV["EMAIL_LOGIN"]);
         define("PASSWORD", $_ENV["EMAIL_PASSWORD"]);
 
+        $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
             $mail->Host = "smtp.office365.com";
@@ -26,9 +26,8 @@ class SendEmail
             $mail->addAddress($email);
 
             $mail->isHTML(true);
-            $mail->Subject = "Cadastro realizado com sucesso!";
-            $mail->Body = "Senha gerada:" . "<br>" . $password;
-            $mail->AltBody = "Senha gerada:" . "<br>" . $password;
+            $mail->Subject = $title;
+            $mail->Body = $body;
             $response = $mail->send();
 
             return $response;

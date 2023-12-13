@@ -117,8 +117,11 @@ class UserModel implements UserRepository
             $stmt->bindParam(':uf_id', $uf);
             $stmt->execute();
 
+            $title = "Report Alares - Cadastro realizado com sucesso!";
+            $body = "Boas Vindas, " . $username . ". Seu cadastro foi realizado com sucesso. Acesse o <a href='https://google.com.br'>link</a> abaixo para fazer login com a senha:<br><br>" . $password . "<br><br>Atenciosamente,<br>Equipe Report Alares";
+
             $sendEmail =  new SendEmail;
-            $sendEmail->handle($email, $password);
+            $sendEmail->handle($email, $password, $title, $body);
 
             $httpCode = 201;
             $data = [
@@ -338,7 +341,6 @@ class UserModel implements UserRepository
             $stmt->bindValue(':user_id', $user_id);
 
             if ($stmt->execute()) {
-                echo $stmt->execute();
                 $response = [
                     'user' => [
                         'id' => $response['id'],
@@ -346,7 +348,7 @@ class UserModel implements UserRepository
                         'email' => $response['email'],
                         'created_at' => $response['created_at']
                     ],
-                    'token' => $token
+                    'access_token' => $token
                 ];
 
                 $data = [
@@ -557,6 +559,128 @@ class UserModel implements UserRepository
                 'response' => [
                     'code' => $httpCode,
                     'message' => 'User updated successfully!',
+                ],
+            ];
+
+            return $data;
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException('Error:', 0, $th);
+        }
+    }
+    public function generateTokenResetPassword(): array | Exception
+    {
+        try {
+            $email = $_GET['email'];
+
+            if (!isset($email)) {
+                $httpCode = 204;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Email is required',
+                    ],
+                ];
+                return $data;
+            }
+
+            $sql = "SELECT id FROM users WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $response = $stmt->fetch();
+
+            if (!$response) {
+                $httpCode = 404;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'User not found',
+                    ],
+                ];
+                return $data;
+            }
+
+            $generateToken = new GenerateToken();
+            $timeExpireToken = 1;
+            [$token, $time] = $generateToken->handle($timeExpireToken);
+
+            $sql = "UPDATE users SET reset_password_token = :token, reset_token_expires_at = :time WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':token', $token);
+            $stmt->bindValue(':time', $time);
+            $stmt->bindValue(':email', $email);
+            $stmt->execute();
+
+            $title = 'Report - Redefinir senha';
+            $message = 'Clique no link abaixo e utilize o token para redefinir sua senha: ' . $token;
+
+            $sendEmail = new SendEmail();
+            $sendEmail->handle($email, $token, $title, $message);
+
+            $httpCode = 200;
+            $data = [
+                'code' => $httpCode,
+                'response' => [
+                    'code' => $httpCode,
+                    'message' => 'Email sent successfully',
+                ],
+            ];
+
+            return $data;
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException('Error:', 0, $th);
+        }
+    }
+    public function resetPassword(): array | Exception
+    {
+        try {
+            $email = $_GET['email'];
+            $token = $_GET['token'];
+            $password = $_GET['password'];
+
+            if (!isset($email) || !isset($token) || !isset($password)) {
+                $httpCode = 204;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'All fields are required',
+                    ],
+                ];
+                return $data;
+            }
+
+            $validateToken = $this->authMiddleware->handleValidateResetPasswordToken($email, $token);
+            if (!$validateToken) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Invalid token',
+                    ],
+                ];
+                return $data;
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            $sql = "UPDATE users SET password = :password, reset_password_token = NULL, reset_token_expires_at = NULL WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':password', $hashedPassword);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+
+            $httpCode = 200;
+            $data = [
+                'code' => $httpCode,
+                'response' => [
+                    'code' => $httpCode,
+                    'message' => 'Password updated successfully',
                 ],
             ];
 

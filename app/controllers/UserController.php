@@ -89,10 +89,22 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-    public function createNewRole()
+
+    public function generateTokenResetPassword()
     {
         try {
-            $data = $this->userModel->createNewRole();
+            $data = $this->userModel->generateTokenResetPassword();
+
+            return Response::json($data);
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
+    public function resetPassword()
+    {
+        try {
+            $data = $this->userModel->resetPassword();
 
             return Response::json($data);
         } catch (\Throwable $th) {

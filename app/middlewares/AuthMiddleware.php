@@ -66,7 +66,38 @@ class AuthMiddleware
             $stmt->bindValue(':email', $email);
             $stmt->execute();
 
-            echo 'ok';
+            return false;
+        } catch (\Throwable $th) {
+            throw new \RuntimeException('Error:', 0, $th);
+        }
+    }
+    public function handleValidateResetPasswordToken($email, $userToken): bool | Exception
+    {
+        try {
+            $sql = "SELECT reset_token_expires_at, reset_password_token FROM users WHERE email = :email AND reset_password_token = :token";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':email', $email);
+            $stmt->bindValue(':token', $userToken);
+            $stmt->execute();
+            $response = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $resetPasswordTokenExpiresAt = $response['reset_token_expires_at'];
+            $token = $response['reset_password_token'];
+
+            if (!$token) {
+                return false;
+            }
+
+            $currentDate = date('Y-m-d H:i:s');
+
+            if ($resetPasswordTokenExpiresAt >= $currentDate) {
+                return true;
+            }
+
+            $sql = "UPDATE users SET reset_token_expires_at = NULL, reset_password_token = NULL WHERE email = :email";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':email', $email);
+            $stmt->execute();
 
             return false;
         } catch (\Throwable $th) {

@@ -51,7 +51,10 @@ $router = [
     'POST' => [
         // User Controller - admin only
         '/create-user/' => fn () => load('AdminUserController', 'create'),
+        // User Controller
         '/login/' => fn () => load('UserController', 'login'),
+        '/create-token-reset-password/' => fn () => load('UserController', 'generateTokenResetPassword'),
+        '/reset-password/' => fn () => load('UserController', 'resetPassword'),
         // Role Controller
         '/create-new-role/' => fn () => load('RoleController', 'create'),
         // Report Controller
