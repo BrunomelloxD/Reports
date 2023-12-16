@@ -50,9 +50,9 @@ $router = [
     ],
     'POST' => [
         // User Controller - admin only
-        '/create-user/' => fn () => load('AdminUserController', 'create'),
+        '/create-user' => fn () => load('AdminUserController', 'createUser'),
         // User Controller
-        '/login/' => fn () => load('UserController', 'login'),
+        '/login' => fn () => load('UserController', 'login'),
         '/create-token-reset-password/' => fn () => load('UserController', 'generateTokenResetPassword'),
         '/reset-password/' => fn () => load('UserController', 'resetPassword'),
         // Role Controller
@@ -64,7 +64,7 @@ $router = [
     ],
     'DELETE' => [
         // User Controller
-        '/delete-user/' => fn () => load('UserController', 'delete'),
+        '/delete-user/' => fn () => load('AdminUserController', 'deleteUser'),
         // Report Controller
         '/delete-report/' => fn () => load('ReportController', 'delete'),
         // Role Controller

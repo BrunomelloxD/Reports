@@ -25,7 +25,7 @@ class RoleModel implements RoleRepository
             $role_name = $_GET['role_name'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($role_name)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -111,7 +111,7 @@ class RoleModel implements RoleRepository
             $role_id = $_GET['role_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($role_id)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -186,7 +186,7 @@ class RoleModel implements RoleRepository
             $role_id = $_GET['role_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($role_id)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -253,7 +253,7 @@ class RoleModel implements RoleRepository
             $role_name = $_GET['role_name'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($role_id) || !isset($role_name)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [

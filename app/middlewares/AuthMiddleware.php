@@ -37,7 +37,6 @@ class AuthMiddleware
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
-
     public function handleValidateLoginToken($email, $userToken): bool | Exception
     {
         try {

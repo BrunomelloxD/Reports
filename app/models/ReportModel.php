@@ -30,7 +30,7 @@ class ReportModel implements ReportRepository
             $image = $_FILES['report_image'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($title) || !isset($description) || !isset($image)) {
-                $httpCode = 400;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -121,7 +121,7 @@ class ReportModel implements ReportRepository
             $user_id = $_GET['user_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($user_id)) {
-                $httpCode = 400;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -189,7 +189,7 @@ class ReportModel implements ReportRepository
             $report_id = $_GET['report_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($report_id)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -294,7 +294,7 @@ class ReportModel implements ReportRepository
             $description = $_GET['description'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($report_id) || !isset($title) || !isset($description)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -306,7 +306,6 @@ class ReportModel implements ReportRepository
             }
 
             $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
-
             if (!$validateToken) {
                 $httpCode = 401;
                 $data = [
@@ -326,6 +325,14 @@ class ReportModel implements ReportRepository
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             $user_id = $user['id'];
+
+            $sql = "SELECT *, report_images.image_url FROM reports JOIN report_images ON reports.id = report_images.id WHERE id = :report_id AND user_id = :user_id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':report_id', $report_id);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            $report = $stmt->fetch(PDO::FETCH_ASSOC);
+            $imagePath = '..' . $report['image_url'];
 
             // Updating report
             $sql = "UPDATE reports SET title = :title, description = :description WHERE id = :report_id AND user_id = :user_id";

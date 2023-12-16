@@ -3,12 +3,10 @@
 namespace App\Utils;
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
 
 class SendEmail
 {
-    public function handle($email, $password, $title, $body)
+    public function handle($email, $title, $body)
     {
         define("LOGIN", $_ENV["EMAIL_LOGIN"]);
         define("PASSWORD", $_ENV["EMAIL_PASSWORD"]);

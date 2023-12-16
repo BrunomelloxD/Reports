@@ -22,10 +22,21 @@ class AdminUserController
         $this->userModel = new UserModel($this->connection);
     }
 
-    public function create()
+    public function createUser()
     {
         try {
             $data = $this->userModel->create();
+
+            return Response::json($data);
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException($th);
+        }
+    }
+    public function deleteUser()
+    {
+        try {
+            $data = $this->userModel->delete();
 
             return Response::json($data);
         } catch (\Throwable $th) {

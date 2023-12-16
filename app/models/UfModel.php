@@ -24,7 +24,7 @@ class UfModel implements UfRepository
             $auth_token = $_GET['auth_token'];
 
             if (!isset($auth_email) || !isset($auth_token)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -85,7 +85,7 @@ class UfModel implements UfRepository
             $uf_id = $_GET['uf_id'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($uf_id)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -147,7 +147,7 @@ class UfModel implements UfRepository
             $uf_name = $_GET['uf_name'];
 
             if (!isset($auth_email) || !isset($auth_token)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -189,7 +189,7 @@ class UfModel implements UfRepository
             $stmt->bindValue(':uf_name', $uf_name);
             $response = $stmt->execute();
 
-            if(!$response) {
+            if (!$response) {
                 $httpCode = 500;
                 $data = [
                     'code' => $httpCode,
@@ -223,7 +223,7 @@ class UfModel implements UfRepository
             $uf_id = $_GET['uf_id'];
 
             if (!isset($auth_email) || !isset($auth_token)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -265,7 +265,7 @@ class UfModel implements UfRepository
             $stmt->bindValue(':uf_id', $uf_id);
             $response = $stmt->execute();
 
-            if(!$response) {
+            if (!$response) {
                 $httpCode = 500;
                 $data = [
                     'code' => $httpCode,
@@ -286,7 +286,6 @@ class UfModel implements UfRepository
                 ],
             ];
             return $data;
-
         } catch (\Throwable $th) {
             echo $th->getMessage();
             throw new \RuntimeException('Error:', 0, $th);
@@ -301,7 +300,7 @@ class UfModel implements UfRepository
             $uf_name = $_GET['uf_name'];
 
             if (!isset($auth_email) || !isset($auth_token) || !isset($uf_id) || !isset($uf_name)) {
-                $httpCode = 204;
+                $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
                     'response' => [
@@ -344,7 +343,7 @@ class UfModel implements UfRepository
             $stmt->bindValue(':uf_name', $uf_name);
             $response = $stmt->execute();
 
-            if(!$response) {
+            if (!$response) {
                 $httpCode = 500;
                 $data = [
                     'code' => $httpCode,
@@ -365,7 +364,6 @@ class UfModel implements UfRepository
                 ],
             ];
             return $data;
-
         } catch (\Throwable $th) {
             echo $th->getMessage();
             throw new \RuntimeException('Error:', 0, $th);

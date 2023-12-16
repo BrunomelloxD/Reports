@@ -67,17 +67,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-    public function delete()
-    {
-        try {
-            $data = $this->userModel->delete();
-
-            return Response::json($data);
-        } catch (\Throwable $th) {
-            echo $th->getMessage();
-            throw new \RuntimeException($th);
-        }
-    }
     public function update()
     {
         try {
@@ -89,7 +78,6 @@ class UserController
             throw new \RuntimeException($th);
         }
     }
-
     public function generateTokenResetPassword()
     {
         try {
