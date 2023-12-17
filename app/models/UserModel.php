@@ -125,8 +125,8 @@ class UserModel implements UserRepository
             $stmt->bindParam(':sector_id', $sector);
             $stmt->execute();
 
-            $title = "Report Alares - Cadastro realizado com sucesso!";
-            $body = "Boas Vindas, " . $username . ". Seu cadastro foi realizado com sucesso. Acesse o <a href='https://google.com.br'>link</a> abaixo para fazer login com a senha:<br><br>" . $password . "<br><br>Atenciosamente,<br>Equipe Report Alares";
+            $title = "Report System - Cadastro realizado com sucesso!";
+            $body = "Boas Vindas, " . $username . ". Seu cadastro foi realizado com sucesso. Acesse o <a href='https://google.com.br'>link</a> abaixo para fazer login com a senha:<br><br>" . $password . "<br><br>Atenciosamente,<br>Equipe Report Report System";
 
             $sendEmail =  new SendEmail;
             $sendEmail->handle($email, $title, $body);
