@@ -126,7 +126,7 @@ class UserModel implements UserRepository
             $stmt->execute();
 
             $title = "Report System - Cadastro realizado com sucesso!";
-            $body = "Boas Vindas, " . $username . ". Seu cadastro foi realizado com sucesso. Acesse o <a href='https://google.com.br'>link</a> abaixo para fazer login com a senha:<br><br>" . $password . "<br><br>Atenciosamente,<br>Equipe Report Report System";
+            $body = "Boas Vindas, " . $username . ". Seu cadastro foi realizado com sucesso. Acesse o <a href='https://google.com.br'>link</a> abaixo para fazer login com a senha:<br><br>" . $password . "<br><br>Atenciosamente,<br>Equipe Report";
 
             $sendEmail =  new SendEmail;
             $sendEmail->handle($email, $title, $body);
@@ -385,8 +385,17 @@ class UserModel implements UserRepository
                 return $data;
             }
 
-            $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name FROM users JOIN user_roles ON users.id = user_roles.user_id JOIN roles ON user_roles.role_id = roles.id JOIN user_uf_relations ON users.id = user_uf_relations.user_id JOIN ufs ON user_uf_relations.uf_id = ufs.id";
+            // $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name FROM users JOIN user_roles ON users.id = user_roles.user_id JOIN roles ON user_roles.role_id = roles.id JOIN user_uf_relations ON users.id = user_uf_relations.user_id JOIN ufs ON user_uf_relations.uf_id = ufs.id";
 
+            $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name, COUNT(reports.id) AS reports_count 
+            FROM users 
+            JOIN user_roles ON users.id = user_roles.user_id 
+            JOIN roles ON user_roles.role_id = roles.id 
+            JOIN user_uf_relations ON users.id = user_uf_relations.user_id 
+            JOIN ufs ON user_uf_relations.uf_id = ufs.id 
+            LEFT JOIN reports ON users.id = reports.user_id 
+            GROUP BY users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name;
+            ";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
