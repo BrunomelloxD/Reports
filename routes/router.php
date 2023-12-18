@@ -40,6 +40,7 @@ $router = [
         '/get-all-user/' => fn () => load('UserController', 'getAll'),
         // Report Controller
         '/get-all-report/' => fn () => load('ReportController', 'getAll'),
+        '/get-all-report-by-user/' => fn () => load('SupervisorController', 'getAllReportsByUser'),
         // Role Controller
         '/get-all-role/' => fn () => load('RoleController', 'getAll'),
         '/get-role/' => fn () => load('RoleController', 'get'),

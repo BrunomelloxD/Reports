@@ -181,6 +181,71 @@ class ReportModel implements ReportRepository
             throw new \RuntimeException('Error:', 0, $th);
         }
     }
+
+    public function getAllReportsByUser(): array | Exception
+    {
+        try {
+            $auth_email = $_GET['auth_email'];
+            $auth_token = $_GET['auth_token'];
+            $user_id = $_GET['user_id'];
+
+            if (!isset($auth_email) || !isset($auth_token) || !isset($user_id)) {
+                $httpCode = 422;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'All fields are required',
+                    ],
+                ];
+                return $data;
+            }
+
+            $auth = $this->authMiddleware->handleCheckPermissionSupervisor($auth_email);
+            if (!$auth) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'User is not authorized',
+                    ],
+                ];
+                return $data;
+            }
+
+            $validateToken = $this->authMiddleware->handleValidateLoginToken($auth_email, $auth_token);
+            if (!$validateToken) {
+                $httpCode = 401;
+                $data = [
+                    'code' => $httpCode,
+                    'response' => [
+                        'code' => $httpCode,
+                        'message' => 'Unauthorized',
+                    ],
+                ];
+                return $data;
+            }
+
+            // Getting reports
+            $sql = "SELECT reports.id, reports.title, reports.description, reports.created_at FROM reports WHERE user_id = :user_id";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $data = [
+                'code' => 200,
+                'response' => $response,
+            ];
+
+            return $data;
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            throw new \RuntimeException('Error:', 0, $th);
+        }
+    }
     public function delete(): array | Exception
     {
         try {

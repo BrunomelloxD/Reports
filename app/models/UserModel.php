@@ -21,6 +21,9 @@ class UserModel implements UserRepository
         $this->authMiddleware = new AuthMiddleware($this->conn);
     }
 
+    // Supervisor only
+
+
     // Admin only
     public function create(): array | Exception
     {
@@ -31,9 +34,8 @@ class UserModel implements UserRepository
             $email = $_POST['email'];
             $role_id = $_POST['role_id'];
             $uf = $_POST['uf_id'];
-            $sector = $_POST['sector_id'];
 
-            if (!isset($auth_email) || !isset($auth_token) || !isset($username) || !isset($email) || !isset($role_id) || !isset($uf) || !isset($sector)) {
+            if (!isset($auth_email) || !isset($auth_token) || !isset($username) || !isset($email) || !isset($role_id) || !isset($uf)) {
                 $httpCode = 422;
                 $data = [
                     'code' => $httpCode,
@@ -116,13 +118,6 @@ class UserModel implements UserRepository
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':user_id', $user_id);
             $stmt->bindParam(':uf_id', $uf);
-            $stmt->execute();
-
-            // Creating the user sector
-            $sql = "INSERT INTO user_sectors_relations (user_id, sector_id) VALUES (:user_id, :sector_id)";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->bindParam(':sector_id', $sector);
             $stmt->execute();
 
             $title = "Report System - Cadastro realizado com sucesso!";
@@ -286,26 +281,6 @@ class UserModel implements UserRepository
                 return $data;
             }
 
-            $sqlSector = "SELECT sector_name FROM sectors JOIN user_sectors_relations ON sectors.id = user_sectors_relations.sector_id WHERE user_sectors_relations.user_id = :id";
-            $stmtSector = $this->conn->prepare($sqlSector);
-            $stmtSector->bindValue(':id', $user_id);
-            $stmtSector->execute();
-            $sector = $stmtSector->fetchAll(PDO::FETCH_ASSOC);
-
-            if (!$sector) {
-                $httpCode = 404;
-                $data = [
-                    'code' => $httpCode,
-                    'response' => [
-                        'code' => $httpCode,
-                        'message' => 'Sector not found',
-                    ],
-                ];
-                return $data;
-            }
-
-            $user = array_merge($user, ['sector' => $sector]);
-
             $sqlReports = "SELECT * FROM reports WHERE user_id = :id";
             $stmtReports = $this->conn->prepare($sqlReports);
             $stmtReports->bindValue(':id', $user_id);
@@ -346,7 +321,7 @@ class UserModel implements UserRepository
                 return $data;
             }
 
-            $auth = $this->authMiddleware->handleCheckPermissionAdmin($email);
+            $auth = $this->authMiddleware->handleCheckPermissionSupervisor($email);
             if (!$auth) {
                 $httpCode = 403;
                 $data = [
@@ -360,7 +335,6 @@ class UserModel implements UserRepository
             }
 
             $validateToken = $this->authMiddleware->handleValidateLoginToken($email, $token);
-
             if (!$validateToken) {
                 $httpCode = 401;
                 $data = [
@@ -372,20 +346,19 @@ class UserModel implements UserRepository
                 ];
                 return $data;
             }
+            $sql = "SELECT id FROM users WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $response = $stmt->fetch();
+            $user_id = $response['id'];
 
-            if (!$auth) {
-                $httpCode = 401;
-                $data = [
-                    'code' => $httpCode,
-                    'response' => [
-                        'code' => $httpCode,
-                        'message' => 'Unauthorized'
-                    ],
-                ];
-                return $data;
-            }
-
-            // $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name FROM users JOIN user_roles ON users.id = user_roles.user_id JOIN roles ON user_roles.role_id = roles.id JOIN user_uf_relations ON users.id = user_uf_relations.user_id JOIN ufs ON user_uf_relations.uf_id = ufs.id";
+            $sql = "SELECT uf_id FROM user_uf_relations WHERE user_id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id', $user_id);
+            $stmt->execute();
+            $response = $stmt->fetch();
+            $uf_id = $response['uf_id'];
 
             $sql = "SELECT users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name, COUNT(reports.id) AS reports_count 
             FROM users 
@@ -394,9 +367,12 @@ class UserModel implements UserRepository
             JOIN user_uf_relations ON users.id = user_uf_relations.user_id 
             JOIN ufs ON user_uf_relations.uf_id = ufs.id 
             LEFT JOIN reports ON users.id = reports.user_id 
-            GROUP BY users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name;
-            ";
+            WHERE user_uf_relations.uf_id = :id AND users.email != :email AND user_roles.role_id != 1 AND user_roles.role_id != 2
+            GROUP BY users.id, users.username, users.email, users.created_at, roles.role_name, ufs.uf_name;";
+
             $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id', $uf_id);
+            $stmt->bindParam(':email', $email);
             $stmt->execute();
             $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
